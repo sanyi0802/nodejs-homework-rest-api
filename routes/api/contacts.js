@@ -17,7 +17,7 @@ const contactSchema = Joi.object({
   phone: Joi.string().required()
 });
 
-// Ruta para listar todos los contactos
+
 router.get('/', async (req, res, next) => {
   try {
     const contacts = await listContacts();
@@ -27,7 +27,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// Ruta para obtener un contacto por ID
+
 router.get('/:contactId', async (req, res, next) => {
   try {
     const contact = await getContactById(req.params.contactId);
@@ -41,7 +41,7 @@ router.get('/:contactId', async (req, res, next) => {
   }
 });
 
-// Ruta para añadir un nuevo contacto
+
 router.post('/', async (req, res, next) => {
   try {
     const { error } = contactSchema.validate(req.body);
@@ -56,7 +56,6 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-// Ruta para eliminar un contacto por ID
 router.delete('/:contactId', async (req, res, next) => {
   try {
     const result = await removeContact(req.params.contactId);
@@ -70,7 +69,7 @@ router.delete('/:contactId', async (req, res, next) => {
   }
 });
 
-// Ruta para actualizar un contacto por ID
+
 router.put('/:contactId', async (req, res, next) => {
   try {
     const { error } = contactSchema.validate(req.body);

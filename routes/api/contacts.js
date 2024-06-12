@@ -1,25 +1,92 @@
-const express = require('express')
+const express = require('express');
+const router = express.Router();
+const Joi = require('joi');
 
-const router = express.Router()
+const {
+  listContacts,
+  getContactById,
+  removeContact,
+  addContact,
+  updateContact
+} = require('../../models/contacts');
 
+// Esquema de validación con Joi
+const contactSchema = Joi.object({
+  name: Joi.string().required(),
+  email: Joi.string().email().required(),
+  phone: Joi.string().required()
+});
+
+// Ruta para listar todos los contactos
 router.get('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const contacts = await listContacts();
+    res.json(contacts);
+  } catch (error) {
+    next(error);
+  }
+});
 
+// Ruta para obtener un contacto por ID
 router.get('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const contact = await getContactById(req.params.contactId);
+    if (contact) {
+      res.json(contact);
+    } else {
+      res.status(404).json({ message: 'Not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
+// Ruta para añadir un nuevo contacto
 router.post('/', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const { error } = contactSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+    const { name, email, phone } = req.body;
+    const newContact = await addContact({ name, email, phone });
+    res.status(201).json(newContact);
+  } catch (error) {
+    next(error);
+  }
+});
 
+// Ruta para eliminar un contacto por ID
 router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const result = await removeContact(req.params.contactId);
+    if (result) {
+      res.json({ message: 'contact deleted' });
+    } else {
+      res.status(404).json({ message: 'Not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
+// Ruta para actualizar un contacto por ID
 router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+  try {
+    const { error } = contactSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+    const { name, email, phone } = req.body;
+    const updatedContact = await updateContact(req.params.contactId, { name, email, phone });
+    if (updatedContact) {
+      res.json(updatedContact);
+    } else {
+      res.status(404).json({ message: 'Not found' });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
 
-module.exports = router
+module.exports = router;

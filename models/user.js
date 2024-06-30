@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
 const bcrypt = require('bcryptjs');
+const { Schema } = mongoose;
 
 const userSchema = new Schema({
   password: {
@@ -23,7 +23,8 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.pre('save', async function(next) {
+// Pre-save hook to hash passwords
+userSchema.pre('save', async function (next) {
   if (this.isModified('password')) {
     this.password = await bcrypt.hash(this.password, 10);
   }

@@ -3,7 +3,10 @@ const mongoose = require('mongoose');
 
 console.log('DB_HOST:', process.env.DB_HOST); // Verificar la variable de entorno
 
-mongoose.connect(process.env.DB_HOST);
+mongoose.connect(process.env.DB_HOST, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
 
 const db = mongoose.connection;
 
@@ -15,3 +18,5 @@ db.on('error', (error) => {
 db.once('open', () => {
   console.log('Database connection successful');
 });
+
+module.exports = db;

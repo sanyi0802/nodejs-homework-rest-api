@@ -1,7 +1,7 @@
-const Contact = require('./contact_temp'); // Asegúrate de que la ruta es correcta y está en minúsculas
+const Contact = require('./contact');
 
 const listContacts = async () => {
-  return await Contact.find({});
+  return await Contact.find();
 };
 
 const getContactById = async (contactId) => {
@@ -9,11 +9,15 @@ const getContactById = async (contactId) => {
 };
 
 const removeContact = async (contactId) => {
-  return await Contact.findByIdAndRemove(contactId);
+  console.log(`Removing contact with ID: ${contactId}`);
+  const result = await Contact.findByIdAndDelete(contactId);
+  console.log(`Remove result: ${result}`);
+  return result;
 };
 
 const addContact = async (body) => {
-  return await Contact.create(body);
+  const newContact = new Contact(body);
+  return await newContact.save();
 };
 
 const updateContact = async (contactId, body) => {

@@ -1,21 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact
-} = require('../../models/contacts');
-const Joi = require('joi');
+const { listContacts, getContactById, removeContact, addContact, updateContact } = require('../../models/contacts');
 
-const contactSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().email().required(),
-  phone: Joi.string().required(),
-  favorite: Joi.boolean()
-});
-
+// Ruta para listar todos los contactos
 router.get('/', async (req, res, next) => {
   try {
     const contacts = await listContacts();
@@ -25,25 +12,23 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// Ruta para obtener un contacto por ID
 router.get('/:contactId', async (req, res, next) => {
   try {
     const contact = await getContactById(req.params.contactId);
     if (contact) {
       res.json(contact);
     } else {
-      res.status(404).json({ message: 'Not found' });
+      res.status(404).json({ message: 'Contact not found' });
     }
   } catch (error) {
     next(error);
   }
 });
 
+// Ruta para agregar un nuevo contacto
 router.post('/', async (req, res, next) => {
   try {
-    const { error } = contactSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
     const newContact = await addContact(req.body);
     res.status(201).json(newContact);
   } catch (error) {
@@ -51,47 +36,32 @@ router.post('/', async (req, res, next) => {
   }
 });
 
+// Ruta para eliminar un contacto por ID
 router.delete('/:contactId', async (req, res, next) => {
   try {
+    console.log(`Attempting to delete contact with ID: ${req.params.contactId}`);
     const result = await removeContact(req.params.contactId);
     if (result) {
-      res.json({ message: 'contact deleted' });
+      console.log(`Contact deleted: ${result}`);
+      res.json({ message: 'Contact deleted' });
     } else {
-      res.status(404).json({ message: 'Not found' });
+      console.log('Contact not found');
+      res.status(404).json({ message: 'Contact not found' });
     }
   } catch (error) {
+    console.error(`Error deleting contact: ${error}`);
     next(error);
   }
 });
 
+// Ruta para actualizar un contacto por ID
 router.put('/:contactId', async (req, res, next) => {
   try {
-    const { error } = contactSchema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.details[0].message });
-    }
     const updatedContact = await updateContact(req.params.contactId, req.body);
     if (updatedContact) {
       res.json(updatedContact);
     } else {
-      res.status(404).json({ message: 'Not found' });
-    }
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.patch('/:contactId/favorite', async (req, res, next) => {
-  try {
-    const { favorite } = req.body;
-    if (favorite === undefined) {
-      return res.status(400).json({ message: 'missing field favorite' });
-    }
-    const updatedContact = await updateContact(req.params.contactId, { favorite });
-    if (updatedContact) {
-      res.json(updatedContact);
-    } else {
-      res.status(404).json({ message: 'Not found' });
+      res.status(404).json({ message: 'Contact not found' });
     }
   } catch (error) {
     next(error);

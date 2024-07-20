@@ -9,15 +9,11 @@ const getContactById = async (contactId) => {
 };
 
 const removeContact = async (contactId) => {
-  console.log(`Removing contact with ID: ${contactId}`);
-  const result = await Contact.findByIdAndDelete(contactId);
-  console.log(`Remove result: ${result}`);
-  return result;
+  return await Contact.findByIdAndDelete(contactId);
 };
 
 const addContact = async (body) => {
-  const newContact = new Contact(body);
-  return await newContact.save();
+  return await Contact.create(body);
 };
 
 const updateContact = async (contactId, body) => {

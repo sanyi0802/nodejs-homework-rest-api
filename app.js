@@ -1,8 +1,8 @@
 const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
-
 const contactsRouter = require('./routes/api/contacts');
+require('./db'); // Asegúrate de que la conexión se establece
 
 const app = express();
 
